@@ -52,8 +52,6 @@ public class VendedorServiceTest {
 
     @Test
     public void testSalvar() {
-        // ...
-
         // when
         when(vendedorRepository.save(vendedor)).thenReturn(vendedor);
 
@@ -62,12 +60,13 @@ public class VendedorServiceTest {
 
         // then
         assertNotNull(vendedorSalvo, "Falha - VendedorServiceTest - testSalvar()");
-        // ...
+
     }
 
     @Test
     public void testListarTodos() {
 
+        // given
         List<Vendedor> vendedores = new ArrayList<>();
         vendedores.add(vendedor);
 
