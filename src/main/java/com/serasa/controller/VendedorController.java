@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.serasa.dto.VendedorDTO;
-import com.serasa.dto.VendedoresDTO;
+import com.serasa.dto.VendedorListItemDTO;
 import com.serasa.model.Vendedor;
 import com.serasa.service.VendedorService;
 
@@ -27,8 +27,8 @@ public class VendedorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VendedoresDTO>> listarTodos() {
-        List<VendedoresDTO> vendedores = vendedorService.listarTodos();
+    public ResponseEntity<List<VendedorListItemDTO>> listarTodos() {
+        List<VendedorListItemDTO> vendedores = vendedorService.listarTodos();
         if (vendedores.isEmpty()) {
             return ResponseEntity.noContent().build();
         } else {

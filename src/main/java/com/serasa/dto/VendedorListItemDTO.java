@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class VendedoresDTO {
+public class VendedorListItemDTO {
     
     private String nome;
 

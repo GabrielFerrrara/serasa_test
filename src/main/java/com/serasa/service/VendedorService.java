@@ -1,6 +1,7 @@
 package com.serasa.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.serasa.dto.VendedorDTO;
-import com.serasa.dto.VendedoresDTO;
+import com.serasa.dto.VendedorListItemDTO;
+import com.serasa.mappers.VendedorListItemMapper;
+import com.serasa.mappers.VendedorMapper;
 import com.serasa.model.Atuacao;
 import com.serasa.model.Vendedor;
 import com.serasa.repository.AtuacaoRepository;
@@ -23,34 +26,24 @@ public class VendedorService {
     @Autowired
     private AtuacaoRepository atuacaoRepository;
 
+    @Autowired
+    private VendedorListItemMapper vendedorListItemMapper;
+
+    @Autowired
+    private VendedorMapper vendedorMapper;
+
     public Vendedor salvar(Vendedor vendedor) {
         return vendedorRepository.save(vendedor);
     }
 
-    public List<VendedoresDTO> listarTodos(){
+    public List<VendedorListItemDTO> listarTodos(){
         List<Vendedor> vendedores = vendedorRepository.findAll();
-        List<VendedoresDTO> objDto = new ArrayList<>();
+        List<VendedorListItemDTO> objDto = new ArrayList<>();
         for (Vendedor vendedor: vendedores){
             objDto.add(criarVendedoresDTO(vendedor));
         }
         return objDto;
     }
-    
-    private VendedoresDTO criarVendedoresDTO(Vendedor vendedor){
-        Optional<Atuacao> atuacao = atuacaoRepository.findById(vendedor.getRegiao());
-        VendedoresDTO objDto = new VendedoresDTO();
-        objDto.setNome(vendedor.getNome());
-        objDto.setTelefone(vendedor.getTelefone());
-        objDto.setIdade(vendedor.getIdade());
-        objDto.setCidade(vendedor.getCidade());
-        objDto.setEstado(vendedor.getEstado());
-        if(atuacao.isPresent()){
-            objDto.setEstados(atuacao.get().getEstados());
-        }
-        return objDto;
-    }
-
-
 
     public VendedorDTO buscarPorId(Long id) {
         Optional<Vendedor> vendedor = vendedorRepository.findById(id);
@@ -60,15 +53,26 @@ public class VendedorService {
             return null;
         }
     }
+    
+    private VendedorListItemDTO criarVendedoresDTO(Vendedor vendedor){
+        VendedorListItemDTO objDto = vendedorListItemMapper.toDto(vendedor);
+        objDto.setEstados(getEstados(vendedor.getRegiao()));
+
+        return objDto;
+    }
+
 
     private VendedorDTO criarVendedorDTO(Vendedor vendedor){
-        Optional<Atuacao> atuacao = atuacaoRepository.findById(vendedor.getRegiao());
-        VendedorDTO objDto = new VendedorDTO();
-        objDto.setNome(vendedor.getNome());
-        objDto.setDataInclusao(vendedor.getDataInclusao());
-        if(atuacao.isPresent()){
-            objDto.setEstados(atuacao.get().getEstados());
-        }
+        VendedorDTO objDto = vendedorMapper.toDto(vendedor);
+        objDto.setEstados(getEstados(vendedor.getRegiao()));
         return objDto;
+    }
+
+    private List<String> getEstados(String regiao){
+        Optional<Atuacao> atuacao = atuacaoRepository.findById(regiao);
+        if(atuacao.isPresent()){
+            return atuacao.get().getEstados();
+        }
+        return Collections.emptyList();
     }
 }
